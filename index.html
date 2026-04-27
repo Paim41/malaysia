@@ -1,76 +1,671 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="description" content="Learn about Malaysia in just 5 minutes! Discover history, culture, food, landmarks, and more in this interactive educational experience." />
-  <meta name="keywords" content="Malaysia, learn, education, culture, history, Kuala Lumpur, Petronas, Nasi Lemak, Merdeka" />
-  <meta name="author" content="Learn Malaysia" />
-  <meta property="og:title" content="Learn Malaysia in 5 Minutes" />
-  <meta property="og:description" content="An interactive journey through the culture, history, and wonders of Malaysia." />
-  <meta property="og:type" content="website" />
-  <meta name="theme-color" content="#012a4a" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <title>Learn Malaysia in 5 Minutes</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="description" content="Learn about Malaysia in 5 minutes — history, culture, food, landmarks and more."/>
+<title>Learn Malaysia in 5 Minutes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --navy:#011627;
+  --navy2:#012a4a;
+  --navy3:#01375f;
+  --red:#cc1722;
+  --gold:#f4b942;
+  --gold2:#ffd166;
+  --white:#f8fafc;
+  --glass:rgba(255,255,255,0.06);
+  --glass2:rgba(255,255,255,0.11);
+  --border:rgba(255,255,255,0.1);
+  --txt:rgba(248,250,252,1);
+  --txt2:rgba(248,250,252,0.68);
+  --txt3:rgba(248,250,252,0.38);
+  --shadow:0 24px 64px rgba(0,0,0,0.5);
+  --r:20px;
+  --t:0.38s cubic-bezier(.16,1,.3,1);
+}
+[data-theme="light"] {
+  --navy:#e8f0f7;
+  --navy2:#d2e2ef;
+  --navy3:#bdd4e7;
+  --glass:rgba(1,42,74,0.06);
+  --glass2:rgba(1,42,74,0.11);
+  --border:rgba(1,42,74,0.13);
+  --txt:rgba(1,26,48,1);
+  --txt2:rgba(1,26,48,0.68);
+  --txt3:rgba(1,26,48,0.38);
+  --shadow:0 24px 64px rgba(0,0,0,0.12);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%;-webkit-text-size-adjust:100%}
+body{font-family:'Outfit',sans-serif;background:var(--navy);color:var(--txt);overflow:hidden;height:100vh;height:100dvh;-webkit-font-smoothing:antialiased;transition:background .4s,color .4s}
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="src/styles.css" />
+/* ── LOADER ── */
+#loader{position:fixed;inset:0;background:#000c18;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;transition:opacity .7s,visibility .7s}
+#loader.gone{opacity:0;visibility:hidden;pointer-events:none}
+.ld-flag{width:88px;height:56px;border-radius:5px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.6);animation:flagwav 2.5s ease-in-out infinite}
+@keyframes flagwav{0%,100%{transform:perspective(180px) rotateY(0deg) scale(1)}50%{transform:perspective(180px) rotateY(12deg) scale(1.03)}}
+.ld-word{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--gold);letter-spacing:.18em;text-transform:uppercase}
+.ld-bar{width:220px;height:2px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden}
+.ld-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--red));border-radius:99px;animation:ldfill 2s ease forwards}
+@keyframes ldfill{from{width:0}to{width:100%}}
+
+/* ── APP SHELL ── */
+#app{height:100vh;height:100dvh;overflow:hidden;position:relative}
+
+/* ── NAVBAR ── */
+#nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;opacity:0;transform:translateY(-18px);transition:all .5s ease}
+#nav.show{opacity:1;transform:none}
+#nav.blur{background:rgba(1,18,39,.82);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--border)}
+[data-theme="light"] #nav.blur{background:rgba(232,240,247,.85)}
+.nav-brand{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:700;color:var(--gold);letter-spacing:.08em;display:flex;align-items:center;gap:9px}
+.nav-brand svg{width:22px;height:22px;flex-shrink:0}
+.nav-btns{display:flex;gap:7px}
+.nbtn{background:var(--glass);border:1px solid var(--border);color:var(--txt);border-radius:99px;padding:6px 15px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;backdrop-filter:blur(8px);display:flex;align-items:center;gap:5px;white-space:nowrap}
+.nbtn svg{width:13px;height:13px}
+.nbtn:hover,.nbtn.on{background:var(--gold);color:#011627;border-color:var(--gold);font-weight:600}
+
+/* ── HERO ── */
+#hero{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity .7s,transform .7s}
+#hero.bye{opacity:0;transform:scale(.96);pointer-events:none}
+.h-bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 35%,#013a63 0%,#000c18 68%)}
+.h-bg::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 15% 85%,rgba(204,23,34,.14) 0%,transparent 52%),radial-gradient(circle at 85% 15%,rgba(244,185,66,.09) 0%,transparent 52%)}
+.stars-wrap{position:absolute;inset:0;overflow:hidden}
+.star{position:absolute;background:#fff;border-radius:50%;animation:twk var(--d,3s) ease-in-out infinite var(--dl,0s)}
+@keyframes twk{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:1;transform:scale(1.8)}}
+.map-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.1;pointer-events:none}
+.h-content{position:relative;z-index:2;text-align:center;padding:24px;max-width:580px;width:100%}
+.h-badge{display:inline-flex;align-items:center;gap:8px;background:var(--glass);border:1px solid var(--border);border-radius:99px;padding:8px 20px;font-size:11px;font-weight:600;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin-bottom:22px;backdrop-filter:blur(10px);animation:fup .8s ease .3s both}
+.h-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:pls 2s ease infinite}
+@keyframes pls{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
+.h-title{font-family:'Cormorant Garamond',serif;font-size:clamp(44px,11vw,88px);font-weight:700;line-height:1.02;animation:fup .8s ease .5s both}
+.h-title em{font-style:normal;background:linear-gradient(130deg,var(--gold) 0%,#ff9a3c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block}
+.h-sub{font-family:'Cormorant Garamond',serif;font-size:clamp(15px,3.5vw,22px);color:var(--txt2);margin:6px 0 18px;animation:fup .8s ease .62s both}
+.h-desc{font-size:clamp(13px,2.4vw,15px);color:var(--txt2);line-height:1.75;max-width:400px;margin:0 auto 32px;animation:fup .8s ease .72s both}
+.cta{display:inline-flex;align-items:center;gap:11px;background:linear-gradient(135deg,var(--gold) 0%,#d99a20 100%);color:#011627;border:none;border-radius:99px;padding:15px 34px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;box-shadow:0 8px 30px rgba(244,185,66,.4);animation:fup .8s ease .88s both;letter-spacing:.02em}
+.cta svg{width:18px;height:18px}
+.cta:hover{transform:translateY(-2px);box-shadow:0 14px 40px rgba(244,185,66,.5)}
+.cta:active{transform:none}
+.h-stats{display:flex;gap:28px;justify-content:center;margin-top:34px;animation:fup .8s ease 1s both}
+.h-stat-n{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--gold)}
+.h-stat-l{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em;margin-top:1px}
+.h-flag{margin-top:30px;animation:fup .8s ease 1.1s both;display:flex;justify-content:center}
+.h-flag-inner{width:54px;height:35px;border-radius:4px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.4);animation:flagwav 4s ease-in-out infinite}
+
+/* ── CARDS SECTION ── */
+#cards{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .5s}
+#cards.on{opacity:1;pointer-events:all}
+#cw{height:100vh;height:100dvh;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#cw::-webkit-scrollbar{display:none}
+
+/* ── CARD SLIDE ── */
+.slide{height:100vh;height:100dvh;scroll-snap-align:start;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.slide-bg-a{background:linear-gradient(155deg,#000c18 0%,#012040 55%,#000c18 100%)}
+.slide-bg-b{background:linear-gradient(155deg,#000c18 0%,#011a30 55%,#000c18 100%)}
+[data-theme="light"] .slide-bg-a,[data-theme="light"] .slide-bg-b{background:linear-gradient(155deg,#d2e2ef 0%,#e0edf5 55%,#d2e2ef 100%)}
+.deco{position:absolute;border-radius:50%;pointer-events:none}
+.deco1{width:420px;height:420px;background:var(--gold);opacity:.04;top:-160px;right:-120px}
+.deco2{width:320px;height:320px;background:var(--red);opacity:.05;bottom:-120px;left:-100px}
+.flag-watermark{position:absolute;bottom:0;right:0;width:180px;height:117px;opacity:.07;pointer-events:none}
+.card-in{position:relative;z-index:2;padding:78px 26px 96px;width:100%;max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+.c-num{font-family:'Space Mono',monospace;font-size:11px;color:var(--txt3);letter-spacing:.16em;text-transform:uppercase}
+.c-icon{width:62px;height:62px;background:var(--glass);border:1px solid var(--border);border-radius:15px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px)}
+.c-icon svg{width:30px;height:30px;color:var(--gold);stroke-width:1.5}
+.c-tag{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.12em}
+.c-title{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,8vw,50px);font-weight:700;line-height:1.08;color:var(--txt)}
+.c-body{font-size:clamp(13.5px,2.8vw,15.5px);color:var(--txt2);line-height:1.78}
+.c-fact{background:var(--glass);border:1px solid var(--border);border-left:3px solid var(--gold);border-radius:13px;padding:15px 18px;backdrop-filter:blur(10px)}
+.c-fact-lbl{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.15em;margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.c-fact-lbl svg{width:13px;height:13px}
+.c-fact-txt{font-size:13px;color:var(--txt2);line-height:1.65}
+.hint{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;opacity:.4;animation:bob 2s ease-in-out infinite;z-index:10}
+.hint-t{font-size:10px;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase}
+.hint svg{width:18px;height:18px;color:var(--txt3)}
+@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
+
+/* ── PROGRESS DOTS ── */
+#prog{position:fixed;right:18px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;z-index:100;opacity:0;transition:opacity .4s}
+#prog.show{opacity:1}
+.pd{width:5px;height:5px;border-radius:99px;background:rgba(255,255,255,.18);transition:all .25s;cursor:pointer}
+.pd.on{background:var(--gold);height:18px}
+.pd:hover{background:rgba(255,255,255,.5)}
+
+/* ── QUIZ ── */
+.quiz-slide{height:100vh;height:100dvh;scroll-snap-align:start;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(155deg,#000c18 0%,#012040 55%,#000c18 100%)}
+[data-theme="light"] .quiz-slide{background:linear-gradient(155deg,#d2e2ef 0%,#e0edf5 55%,#d2e2ef 100%)}
+.quiz-in{position:relative;z-index:2;padding:80px 26px 40px;width:100%;max-width:560px}
+.qz-lbl{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.16em;margin-bottom:8px}
+.qz-h{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,6.5vw,40px);font-weight:700;color:var(--txt)}
+.qz-sub{font-size:14px;color:var(--txt3);margin-top:4px;margin-bottom:22px}
+.qz-pbar{height:2px;background:var(--glass);border-radius:99px;margin-bottom:28px;overflow:hidden}
+.qz-pfill{height:100%;background:linear-gradient(90deg,var(--gold),var(--red));border-radius:99px;transition:width .5s ease}
+.qblock{display:none}
+.qblock.on{display:block}
+.q-txt{font-size:clamp(15px,3.5vw,18px);font-weight:500;color:var(--txt);line-height:1.55;margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.opt{background:var(--glass);border:1px solid var(--border);border-radius:13px;padding:14px 18px;text-align:left;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:13px;color:var(--txt);font-family:'Outfit',sans-serif;font-size:14px;font-weight:400;backdrop-filter:blur(8px)}
+.opt:hover:not(:disabled){background:rgba(244,185,66,.1);border-color:var(--gold)}
+.opt.ok{background:rgba(52,199,89,.14);border-color:#34c759;color:#34c759}
+.opt.ng{background:rgba(204,23,34,.14);border-color:var(--red);color:#ff6b6b}
+.opt:disabled{cursor:not-allowed}
+.opt-lt{width:26px;height:26px;border-radius:50%;background:var(--glass);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;flex-shrink:0}
+.q-fb{background:var(--glass);border-radius:12px;padding:13px 16px;font-size:13px;color:var(--txt2);line-height:1.62;margin-bottom:16px;border-left:3px solid var(--gold);display:none}
+.q-fb.show{display:block}
+.qnext{display:none;width:100%;align-items:center;justify-content:center;gap:9px;background:linear-gradient(135deg,var(--gold),#d99a20);color:#011627;border:none;border-radius:13px;padding:15px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s}
+.qnext.show{display:flex}
+.qnext:hover{opacity:.88}
+
+/* ── COMPLETION ── */
+.done-slide{height:100vh;height:100dvh;scroll-snap-align:start;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(155deg,#000c18 0%,#012040 55%,#000c18 100%)}
+[data-theme="light"] .done-slide{background:linear-gradient(155deg,#d2e2ef 0%,#e0edf5 55%,#d2e2ef 100%)}
+.done-in{position:relative;z-index:2;padding:40px 26px;text-align:center;max-width:460px;width:100%}
+.trophy{width:76px;height:76px;background:linear-gradient(135deg,var(--gold),#d99a20);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;box-shadow:0 0 40px rgba(244,185,66,.3);animation:popin .6s cubic-bezier(.34,1.56,.64,1) both}
+.trophy svg{width:38px;height:38px;color:#011627}
+@keyframes popin{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.done-t{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,6.5vw,40px);font-weight:700;color:var(--txt);margin-bottom:10px}
+.done-s{font-size:14px;color:var(--txt2);line-height:1.65;margin-bottom:28px}
+.score-box{background:var(--glass);border:1px solid var(--border);border-radius:20px;padding:26px;margin-bottom:24px;backdrop-filter:blur(10px)}
+.sc-lbl{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}
+.sc-num{font-family:'Space Mono',monospace;font-size:52px;font-weight:700;color:var(--gold);line-height:1}
+.sc-tot{font-family:'Space Mono',monospace;font-size:18px;color:var(--txt3)}
+.sc-stars{display:flex;justify-content:center;gap:8px;margin-top:14px}
+.sc-star{width:26px;height:26px;color:var(--txt3);transition:color .3s}
+.sc-star.lit{color:var(--gold)}
+.done-acts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.abtn{flex:1;min-width:120px;padding:13px 18px;border-radius:13px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;border:none;display:flex;align-items:center;justify-content:center;gap:7px}
+.abtn svg{width:16px;height:16px}
+.abtn-p{background:linear-gradient(135deg,var(--gold),#d99a20);color:#011627}
+.abtn-s{background:var(--glass);border:1px solid var(--border);color:var(--txt);backdrop-filter:blur(8px)}
+.abtn:hover{opacity:.84;transform:translateY(-1px)}
+
+/* ── CONFETTI ── */
+.cf{position:fixed;width:8px;height:8px;pointer-events:none;z-index:8888;border-radius:2px;animation:cfall var(--d,3s) ease-in var(--dl,0s) both}
+@keyframes cfall{0%{transform:translate(var(--x,50vw),-20px) rotate(0deg);opacity:1}100%{transform:translate(calc(var(--x,50vw) + var(--dr,0px)),110vh) rotate(720deg);opacity:0}}
+
+/* ── ANIMATIONS ── */
+@keyframes fup{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:420px){
+  .card-in{padding:68px 18px 88px;gap:15px}
+  .quiz-in{padding:68px 18px 36px}
+  #prog{right:9px}
+  .nbtn{padding:5px 10px;font-size:11px}
+  .done-acts{flex-direction:column}
+  .h-stats{gap:18px}
+}
+@media(min-width:768px){
+  .card-in{padding:96px 48px 112px;gap:22px}
+  .quiz-in{padding:96px 48px 56px}
+}
+</style>
 </head>
 <body>
 
-<!-- ==============================
-     LOADING SCREEN
-============================== -->
-<div id="loading-screen" aria-hidden="true">
-  <!-- Built by JS -->
+<!-- LOADER -->
+<div id="loader">
+  <div class="ld-flag" id="lf"></div>
+  <div class="ld-word">Malaysia</div>
+  <div class="ld-bar"><div class="ld-fill"></div></div>
 </div>
 
-<!-- ==============================
-     MAIN APP
-============================== -->
+<!-- APP -->
 <div id="app">
-
-  <!-- NAVBAR -->
-  <nav id="navbar" role="navigation" aria-label="Main navigation">
-    <!-- Built by JS -->
+  <nav id="nav">
+    <div class="nav-brand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21V4m0 0h13l-2.5 4.5L16 13H3"/></svg>
+      Malaysia
+    </div>
+    <div class="nav-btns">
+      <button class="nbtn" id="lbtn" onclick="toggleLang()">BM</button>
+      <button class="nbtn" id="tbtn" onclick="toggleTheme()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v1m0 16v1M3 12h1m16 0h1M5.636 5.636l.707.707M17.657 17.657l.707.707M5.636 18.364l.707-.707M17.657 6.343l.707-.707M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Light
+      </button>
+    </div>
   </nav>
+  <div id="prog"></div>
 
-  <!-- PROGRESS SIDEBAR -->
-  <div id="progress-sidebar" role="navigation" aria-label="Section progress">
-    <!-- Built by JS -->
-  </div>
-
-  <!-- HERO SECTION -->
-  <section id="hero-section" aria-label="Welcome">
-    <div class="hero-bg">
-      <div class="stars" aria-hidden="true"></div>
-    </div>
-
-    <!-- Malaysia Map background -->
-    <div class="hero-map-container" aria-hidden="true">
-      <div id="hero-map"></div>
-    </div>
-
-    <div id="hero-content" class="hero-content">
-      <!-- Built by JS -->
-    </div>
+  <!-- HERO -->
+  <section id="hero">
+    <div class="h-bg"></div>
+    <div class="stars-wrap" id="stars"></div>
+    <div class="map-bg" id="mapbg"></div>
+    <div class="h-content" id="hc"></div>
   </section>
 
-  <!-- CARDS SECTION -->
-  <section id="cards-section" aria-label="Learning cards">
-    <div id="cards-wrapper" class="cards-wrapper" role="main">
-      <!-- Cards built by JS, Quiz & Completion appended here -->
-    </div>
+  <!-- CARDS -->
+  <section id="cards">
+    <div id="cw"></div>
   </section>
-
 </div>
 
-<!-- ==============================
-     SCRIPTS
-============================== -->
-<script src="src/data.js"></script>
-<script src="src/script.js"></script>
+<script>
+// ════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════
+const DATA = {
+en:{
+cards:[
+{id:1,icon:'map',tag:'Location & Geography',title:'Where Is Malaysia?',body:'Malaysia is a Southeast Asian country split into two regions: Peninsular Malaysia, sharing a border with Thailand to the north, and East Malaysia — Sabah and Sarawak — sitting on the island of Borneo. The country is embraced by the South China Sea, the Strait of Malacca, and the Andaman Sea.',fact:'Malaysia is one of only 17 megadiverse countries on Earth, harbouring an estimated 20% of the world\'s animal species despite covering less than 0.5% of global land area.'},
+{id:2,icon:'hist',tag:'Civilizations & Kingdoms',title:'A Rich History',body:'Malaysia\'s story stretches back thousands of years. The Srivijaya Empire dominated the region before the Malacca Sultanate rose to become a dazzling 15th-century trading power. The Portuguese, Dutch, and British each held colonial rule in turn, leaving layers of influence still visible today.',fact:'At its peak, the Malacca Sultanate in the 1400s attracted merchants from Arabia, India, China, and Java — making it one of the wealthiest port cities in the world.'},
+{id:3,icon:'flag',tag:'Independence Day — 31 August 1957',title:'Merdeka!',body:'On 31 August 1957, Malaya broke free from British colonial rule. At Merdeka Square in Kuala Lumpur, the nation\'s first Prime Minister, Tunku Abdul Rahman, cried "Merdeka!" — Freedom! — seven times into the night sky. Malaysia as a federation was born on 16 September 1963.',fact:'16 September is celebrated as Malaysia Day, marking the merger of Malaya, Singapore, Sabah, and Sarawak. Singapore later separated peacefully in 1965.'},
+{id:4,icon:'div',tag:'Unity in Diversity',title:'Culture & Diversity',body:'Malaysia is home to more than 30 million people of rich and varied backgrounds — Malay, Chinese, Indian, and over 60 indigenous groups. This extraordinary tapestry of races, languages, and religions coexists peacefully, forming the very soul of Malaysian identity.',fact:'Malaysians speak more than 130 languages and dialects. Bahasa Malaysia is the national tongue, but English, Mandarin, Tamil, Iban, and Kadazan are widely spoken across the nation.'},
+{id:5,icon:'food',tag:'A Culinary Paradise',title:'Incredible Food',body:'Malaysian cuisine is a glorious collision of Malay, Chinese, Indian, and indigenous flavours. Nasi Lemak, Satay, Char Kway Teow, Rendang, Roti Canai, and Laksa are just the beginning. Food is not merely sustenance here — it is ceremony, identity, and love on a plate.',fact:'Nasi Lemak is the national dish, beloved at breakfast, lunch, and dinner alike. Its name literally means "fatty rice" — the grains are slow-cooked in fragrant coconut milk.'},
+{id:6,icon:'city',tag:'Urban Life & Modern Malaysia',title:'Major Cities',body:'Kuala Lumpur, the vibrant capital, dazzles with its iconic skyline and electric street life. George Town in Penang is a UNESCO Heritage city famed for its murals and hawker stalls. Johor Bahru pulses as a modern gateway city, while Kota Kinabalu watches over the Borneo coastline.',fact:'Putrajaya is Malaysia\'s federal administrative capital — a purpose-built planned city inaugurated in 1999, designed as a "garden city" with sweeping Islamic-inspired architecture.'},
+{id:7,icon:'tower',tag:'Icon of Modern Malaysia',title:'Petronas Towers',body:'From 1998 to 2004, the Petronas Twin Towers were the tallest buildings on the planet, soaring to 451.9 metres above Kuala Lumpur. Designed by Cesar Pelli, they remain a breathtaking symbol of Malaysia\'s ambition and modern identity. The sky bridge between floors 41 and 42 is iconic.',fact:'Each tower\'s floor plan is based on two overlapping squares forming an eight-pointed star — a geometry drawn directly from Islamic architectural tradition.'},
+{id:8,icon:'tree',tag:"Nature's Greatest Treasure",title:'Rainforests & Wildlife',body:"Malaysia's rainforests are estimated to be 130 million years old — among the oldest and most biodiverse ecosystems on Earth. Orangutans swing through Borneo's canopy, pygmy elephants roam its rivers, Malayan tigers stalk the peninsula's forests, and thousands of plant species bloom in the ancient green.",fact:'The Rafflesia, the world\'s single largest flower, blooms in Malaysian rainforests. It can reach 1 metre across and produces the unmistakable scent of decaying flesh to attract its pollinators.'},
+{id:9,icon:'lang',tag:'Bahasa Malaysia',title:'Language & Identity',body:'Bahasa Malaysia — also called Bahasa Melayu — is the official national language. An Austronesian tongue written in both Roman script (Rumi) and the traditional Arabic-derived Jawi, it is the language of education, government, and national unity, binding a spectacularly diverse nation together.',fact:'Bahasa Malaysia uses the same 26-letter Latin alphabet as English — making it one of the most approachable Southeast Asian languages for English speakers to begin learning.'},
+{id:10,icon:'fest',tag:'Every Month Is a Holiday',title:'Festivals & Celebrations',body:"Malaysia's calendar overflows with celebration. Hari Raya Aidilfitri marks the end of Ramadan with open houses for all. Chinese New Year fills streets with red lanterns and lion dances. Deepavali blazes with oil lamps. Christmas, Wesak Day, Thaipusam, and Gawai Dayak each add their brilliant colour.",fact:'Malaysia has more public holidays than almost any other country on Earth — 17 national holidays per year, plus additional state holidays that vary by region.'},
+{id:11,icon:'econ',tag:'A Rising Tiger Economy',title:'Economy & Innovation',body:'Malaysia commands one of Southeast Asia\'s most dynamic economies, exporting electronics, palm oil, rubber, and petroleum to the world. The Multimedia Super Corridor powers its technology ambitions, while global corporations choose Kuala Lumpur as their regional headquarters.',fact:"Malaysia produces more than 60% of the world's rubber gloves and is the world's second-largest palm oil producer — two industries that quietly underpin global supply chains."},
+{id:12,icon:'unity',tag:'Satu Malaysia',title:'Peace & Unity',body:'Malaysia\'s crowning achievement is its peaceful multicultural society. Across decades and differences, Malaysians share a common national pride, a spirit of neighbourliness, and a deep sense of belonging. The national motto says it perfectly: Bersekutu Bertambah Mutu — Unity Is Strength.',fact:"Malaysia has not experienced civil war since independence. Its model of multicultural coexistence is studied and admired by scholars and governments around the world."}
+],
+quiz:[
+{q:'When did Malaya declare independence from British rule?',opts:['31 August 1945','31 August 1957','16 September 1963','1 January 1970'],ans:1,exp:'Malaya declared independence on 31 August 1957. Malaysia as a wider federation was formed on 16 September 1963, now celebrated as Malaysia Day.'},
+{q:'What is the national dish of Malaysia?',opts:['Laksa','Rendang','Nasi Lemak','Satay'],ans:2,exp:'Nasi Lemak — coconut milk rice with sambal, crispy anchovies, roasted peanuts, and cucumber — is Malaysia\'s beloved national dish, eaten at any hour of the day.'},
+{q:'How tall are the Petronas Twin Towers?',opts:['351.9 m','401.5 m','451.9 m','501.2 m'],ans:2,exp:'The Petronas Twin Towers stand at 451.9 metres and held the title of world\'s tallest buildings from 1998 until 2004.'}
+],
+ui:{start:'Start Learning',title:'Learn Malaysia',sub:'in 5 Minutes',desc:'Discover the culture, history, food, and wonders of one of Southeast Asia\'s most vibrant nations.',of:'of',dyk:'Did You Know?',swipe:'Swipe to continue',quiz:'Quick Quiz',qsub:'Test what you\'ve learned!',next:'Next Question',result:'See Result',done:'You Learned Malaysia!',donesub:"Congratulations! You've explored the highlights of an amazing country.",score:'Quiz Score',restart:'Start Over',share:'Share',light:'Light',dark:'Dark'}
+},
+bm:{
+cards:[
+{id:1,icon:'map',tag:'Lokasi & Geografi',title:'Di Mana Malaysia?',body:'Malaysia adalah sebuah negara Asia Tenggara yang terbahagi kepada dua wilayah: Semenanjung Malaysia yang bersempadan dengan Thailand di utara, dan Malaysia Timur — Sabah dan Sarawak — yang terletak di pulau Borneo. Negara ini dikelilingi oleh Laut China Selatan, Selat Melaka, dan Laut Andaman.',fact:'Malaysia adalah salah satu daripada hanya 17 negara mega-pelbagai di dunia, menempatkan kira-kira 20% spesies haiwan dunia walaupun hanya meliputi kurang daripada 0.5% kawasan daratan global.'},
+{id:2,icon:'hist',tag:'Tamadun & Kerajaan',title:'Sejarah Yang Kaya',body:'Kisah Malaysia bermula ribuan tahun dahulu. Empayar Srivijaya mendominasi rantau ini sebelum Kesultanan Melaka bangkit menjadi kuasa perdagangan yang gemilang pada abad ke-15. Portugis, Belanda, dan British masing-masing memegang pemerintahan kolonial secara bergilir, meninggalkan lapisan pengaruh yang masih kelihatan hari ini.',fact:'Pada kemuncaknya, Kesultanan Melaka pada tahun 1400-an menarik pedagang dari Arabia, India, China, dan Jawa — menjadikannya salah satu kota pelabuhan paling kaya di dunia.'},
+{id:3,icon:'flag',tag:'Hari Kemerdekaan — 31 Ogos 1957',title:'Merdeka!',body:'Pada 31 Ogos 1957, Tanah Melayu bebas dari penjajahan British. Di Dataran Merdeka Kuala Lumpur, Perdana Menteri pertama, Tunku Abdul Rahman, menjerit "Merdeka!" tujuh kali ke langit malam. Malaysia sebagai persekutuan lahir pada 16 September 1963.',fact:'16 September disambut sebagai Hari Malaysia, menandakan penggabungan Tanah Melayu, Singapura, Sabah, dan Sarawak. Singapura kemudiannya berpisah secara aman pada 1965.'},
+{id:4,icon:'div',tag:'Perpaduan Dalam Kepelbagaian',title:'Budaya & Kepelbagaian',body:'Malaysia didiami lebih 30 juta orang dari latar belakang yang kaya dan pelbagai — Melayu, Cina, India, dan lebih 60 kumpulan orang asli. Permadani kaum, bahasa, dan agama yang luar biasa ini wujud bersama secara aman, membentuk jiwa identiti Malaysia yang sebenar.',fact:'Rakyat Malaysia bertutur lebih 130 bahasa dan dialek. Bahasa Malaysia adalah bahasa kebangsaan, tetapi Bahasa Inggeris, Mandarin, Tamil, Iban, dan Kadazan digunakan secara meluas di seluruh negara.'},
+{id:5,icon:'food',tag:'Syurga Kuliner',title:'Makanan Yang Lazat',body:'Masakan Malaysia adalah gabungan rasa Melayu, Cina, India, dan orang asli yang mengagumkan. Nasi Lemak, Satay, Char Kway Teow, Rendang, Roti Canai, dan Laksa hanyalah permulaan. Di sini, makanan bukan sekadar rezeki — ia adalah upacara, identiti, dan kasih sayang di atas pinggan.',fact:'Nasi Lemak adalah hidangan kebangsaan, digemari untuk sarapan, tengah hari, dan makan malam. Namanya bermaksud "nasi berlemak" — nasi dimasak perlahan dalam santan yang harum.'},
+{id:6,icon:'city',tag:'Kehidupan Bandar & Malaysia Moden',title:'Bandar-Bandar Utama',body:'Kuala Lumpur, ibu kota yang meriah, memukau dengan pemandangan langitnya yang ikonik. George Town di Pulau Pinang adalah kota Warisan UNESCO yang terkenal dengan mural dan gerai hawkernya. Johor Bahru berdenyut sebagai bandar pintu masuk yang moden, manakala Kota Kinabalu menjaga pantai Borneo.',fact:'Putrajaya adalah ibu kota pentadbiran persekutuan Malaysia — sebuah bandar terancang khas yang dilancarkan pada 1999, direka sebagai "bandar taman" dengan senibina berinspirasikan Islam.'},
+{id:7,icon:'tower',tag:'Ikon Malaysia Moden',title:'Menara Petronas',body:'Dari 1998 hingga 2004, Menara Berkembar Petronas adalah bangunan tertinggi di dunia, menjulang setinggi 451.9 meter di atas Kuala Lumpur. Direka oleh Cesar Pelli, ia kekal sebagai simbol ambisi dan identiti moden Malaysia yang memukau. Jambatan langit antara tingkat 41 dan 42 adalah ikonik.',fact:'Pelan lantai setiap menara berasaskan dua segi empat bertindih membentuk bintang lapan mata — geometri yang diambil terus dari tradisi senibina Islam.'},
+{id:8,icon:'tree',tag:'Khazanah Alam Terbesar',title:'Hutan Hujan & Hidupan Liar',body:'Hutan hujan Malaysia dianggarkan berusia 130 juta tahun — antara ekosistem tertua dan paling bioperagam di Bumi. Orang utan bergelayut di kanopi Borneo, gajah kerdil merentas sungainya, harimau Malaya menjelajah hutan semenanjung, dan ribuan spesies tumbuhan berbunga dalam hijau purba.',fact:'Rafflesia, bunga tunggal terbesar di dunia, mekar di hutan hujan Malaysia. Ia boleh mencapai diameter 1 meter dan menghasilkan bau daging busuk yang jelas untuk menarik penyerbuknya.'},
+{id:9,icon:'lang',tag:'Bahasa Malaysia',title:'Bahasa & Identiti',body:'Bahasa Malaysia — juga disebut Bahasa Melayu — adalah bahasa kebangsaan rasmi. Bahasa Austronesia yang ditulis dalam skrip Rumi dan tulisan Jawi tradisional berasaskan Arab ini adalah bahasa pendidikan, kerajaan, dan perpaduan nasional, mengikat sebuah negara yang luar biasa ragam bersama.',fact:'Bahasa Malaysia menggunakan 26 huruf abjad Latin yang sama seperti Bahasa Inggeris — menjadikannya salah satu bahasa Asia Tenggara yang paling mudah dipelajari oleh penutur Bahasa Inggeris.'},
+{id:10,icon:'fest',tag:'Setiap Bulan Ada Perayaan',title:'Perayaan & Sambutan',body:'Kalendar Malaysia melimpah ruah dengan perayaan. Hari Raya Aidilfitri menandakan akhir Ramadan dengan rumah terbuka untuk semua. Tahun Baru Cina memenuhi jalan dengan tanglung merah dan tarian singa. Deepavali bercahaya dengan lampu minyak. Krismas, Hari Wesak, Thaipusam, dan Gawai Dayak masing-masing menambah warna yang cemerlang.',fact:'Malaysia mempunyai lebih banyak cuti umum berbanding hampir mana-mana negara lain di dunia — 17 cuti kebangsaan setahun, ditambah cuti negeri tambahan yang berbeza mengikut wilayah.'},
+{id:11,icon:'econ',tag:'Ekonomi Harimau Yang Sedang Meningkat',title:'Ekonomi & Inovasi',body:'Malaysia memegang salah satu ekonomi paling dinamik di Asia Tenggara, mengeksport elektronik, minyak sawit, getah, dan petroleum ke seluruh dunia. Koridor Raya Multimedia memacu impian teknologinya, manakala syarikat-syarikat global memilih Kuala Lumpur sebagai ibu pejabat serantau mereka.',fact:'Malaysia menghasilkan lebih 60% bekalan sarung tangan getah dunia dan merupakan pengeluar minyak sawit terbesar kedua di dunia — dua industri yang secara senyap menyokong rantaian bekalan global.'},
+{id:12,icon:'unity',tag:'Satu Malaysia',title:'Keamanan & Perpaduan',body:'Pencapaian tertinggi Malaysia adalah masyarakat berbilang budaya yang aman. Merentasi dekad dan perbezaan, rakyat Malaysia berkongsi kebanggaan nasional yang sama, semangat kejiranan, dan rasa kepunyaan yang mendalam. Motto kebangsaan menyatakannya dengan sempurna: Bersekutu Bertambah Mutu.',fact:'Malaysia tidak pernah mengalami perang saudara sejak kemerdekaan. Model penaklukan berbilang budayanya dikaji dan dikagumi oleh sarjana dan kerajaan di seluruh dunia.'}
+],
+quiz:[
+{q:'Bilakah Tanah Melayu mengisytiharkan kemerdekaan daripada penjajahan British?',opts:['31 Ogos 1945','31 Ogos 1957','16 September 1963','1 Januari 1970'],ans:1,exp:'Tanah Melayu mengisytiharkan kemerdekaan pada 31 Ogos 1957. Malaysia sebagai persekutuan yang lebih luas ditubuhkan pada 16 September 1963, kini disambut sebagai Hari Malaysia.'},
+{q:'Apakah hidangan kebangsaan Malaysia?',opts:['Laksa','Rendang','Nasi Lemak','Satay'],ans:2,exp:'Nasi Lemak — nasi santan dengan sambal, ikan bilis rangup, kacang goreng, dan timun — adalah hidangan kebangsaan Malaysia yang digemari pada bila-bila masa dalam sehari.'},
+{q:'Berapakah ketinggian Menara Berkembar Petronas?',opts:['351.9 m','401.5 m','451.9 m','501.2 m'],ans:2,exp:'Menara Berkembar Petronas berdiri setinggi 451.9 meter dan memegang gelaran bangunan tertinggi di dunia dari 1998 sehingga 2004.'}
+],
+ui:{start:'Mula Belajar',title:'Belajar Malaysia',sub:'dalam 5 Minit',desc:'Temui budaya, sejarah, makanan, dan keajaiban salah satu negara paling meriah di Asia Tenggara.',of:'daripada',dyk:'Tahukah Anda?',swipe:'Leret untuk teruskan',quiz:'Kuiz Ringkas',qsub:'Uji apa yang anda pelajari!',next:'Soalan Seterusnya',result:'Lihat Keputusan',done:'Anda Telah Belajar Malaysia!',donesub:'Tahniah! Anda telah meneroka butiran sebuah negara yang menakjubkan.',score:'Skor Kuiz',restart:'Mulakan Semula',share:'Kongsi',light:'Cerah',dark:'Gelap'}
+}
+};
 
+// ════════════════════════════════════════
+// SVG ICONS
+// ════════════════════════════════════════
+const IC = {
+map:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>`,
+hist:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+flag:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21V4m0 0h13l-2.5 4.5L16 13H3"/></svg>`,
+div:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`,
+food:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>`,
+city:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 21h18M9 21V9l3-6 3 6v12M9 12h6M6 21V12M18 21V12"/></svg>`,
+tower:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>`,
+tree:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 17H3a2 2 0 01-2-2V9a2 2 0 012-2h5l4-4 4 4h5a2 2 0 012 2v6a2 2 0 01-2 2h-2m-4 4V11"/></svg>`,
+lang:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>`,
+fest:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>`,
+econ:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>`,
+unity:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>`,
+bulb:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>`,
+dn:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>`,
+rt:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>`,
+star:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>`,
+trophy:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 21h8m-4-4v4M5 3H3a2 2 0 000 4c0 2 1.5 4 4 5m8-9h2a2 2 0 010 4c0 2-1.5 4-4 5M7 3h10v7a5 5 0 01-10 0V3z"/></svg>`,
+ref:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>`,
+shr:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>`,
+sun:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v1m0 16v1M3 12h1m16 0h1M5.636 5.636l.707.707M17.657 17.657l.707.707M5.636 18.364l.707-.707M17.657 6.343l.707-.707M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`,
+moon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>`
+};
+
+// Flag SVG
+function flagSVG(w,h){
+  return `<svg width="${w}" height="${h}" viewBox="0 0 800 520" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="520" fill="#fff"/>
+  ${[...Array(14)].map((_,i)=>`<rect x="0" y="${i*40}" width="800" height="40" fill="${i%2===0?'#CC1722':'#fff'}"/>`).join('')}
+  <rect x="0" y="0" width="400" height="280" fill="#010080"/>
+  <circle cx="165" cy="140" r="82" fill="#FCCB00"/>
+  <circle cx="192" cy="140" r="72" fill="#010080"/>
+  <polygon points="245,96 254,126 285,126 261,143 270,173 245,156 220,173 229,143 205,126 236,126" fill="#FCCB00"/>
+  </svg>`;
+}
+
+// Map SVG
+function mapSVG(){
+  return `<svg viewBox="0 0 900 450" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:860px;height:auto;animation:fadein 2s ease 0.5s both">
+  <defs>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <!-- Peninsular Malaysia -->
+  <path d="M290,110 C305,102 328,98 352,101 C378,105 396,118 408,136 C420,154 418,172 410,190 C401,208 385,225 368,240 C351,255 333,266 316,273 C299,280 283,277 274,268 C262,256 258,240 262,223 C266,206 275,189 278,172 C280,155 278,120 290,110 Z" fill="rgba(244,185,66,0.55)" stroke="rgba(244,185,66,0.85)" stroke-width="1.5" filter="url(#glow)"/>
+  <ellipse cx="267" cy="100" rx="20" ry="13" fill="rgba(244,185,66,0.6)" stroke="rgba(244,185,66,0.9)" stroke-width="1.2"/>
+  <!-- Sabah -->
+  <path d="M565,148 C593,136 632,134 665,145 C698,157 720,176 726,198 C732,220 715,243 692,257 C669,271 640,276 611,270 C582,264 560,247 548,227 C536,207 537,186 549,169 C555,160 560,152 565,148 Z" fill="rgba(204,23,34,0.42)" stroke="rgba(204,23,34,0.75)" stroke-width="1.5" filter="url(#glow)"/>
+  <!-- Sarawak -->
+  <path d="M474,228 C502,216 546,221 580,236 C597,244 609,259 601,278 C592,296 569,307 541,313 C513,319 484,316 462,304 C440,292 432,274 440,258 C446,246 461,234 474,228 Z" fill="rgba(204,23,34,0.42)" stroke="rgba(204,23,34,0.75)" stroke-width="1.5" filter="url(#glow)"/>
+  <!-- Labels -->
+  <text x="346" y="200" fill="rgba(244,185,66,0.92)" font-family="Outfit,sans-serif" font-size="13" font-weight="600" text-anchor="middle">Peninsular</text>
+  <text x="638" y="210" fill="rgba(255,255,255,0.72)" font-family="Outfit,sans-serif" font-size="12" text-anchor="middle">Sabah</text>
+  <text x="522" y="274" fill="rgba(255,255,255,0.72)" font-family="Outfit,sans-serif" font-size="12" text-anchor="middle">Sarawak</text>
+  <!-- KL marker -->
+  <circle cx="336" cy="192" r="5" fill="#f4b942"/>
+  <circle cx="336" cy="192" r="11" fill="rgba(244,185,66,0.18)" stroke="rgba(244,185,66,0.5)" stroke-width="1"/>
+  <text x="350" y="188" fill="rgba(244,185,66,0.9)" font-family="Outfit,sans-serif" font-size="11">KL</text>
+  <!-- SE Asia context -->
+  <text x="450" y="390" fill="rgba(255,255,255,0.15)" font-family="Outfit,sans-serif" font-size="15" text-anchor="middle" letter-spacing="5">SOUTHEAST ASIA</text>
+  </svg>`;
+}
+
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+const S = {lang:'en',theme:'dark',inCards:false,quizA:[],qScore:0,qCur:0};
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  // Loader flag
+  document.getElementById('lf').innerHTML = flagSVG(88,56);
+  // Stars
+  const sw = document.getElementById('stars');
+  for(let i=0;i<90;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const sz=Math.random()*2.4+0.4;
+    s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--dl:${Math.random()*5}s`;
+    sw.appendChild(s);
+  }
+  // Map
+  document.getElementById('mapbg').innerHTML = mapSVG();
+  // Build UI
+  buildHero();
+  buildCards();
+  buildNav();
+  // Show nav after delay
+  setTimeout(()=>document.getElementById('nav').classList.add('show'),1300);
+  // Hide loader
+  setTimeout(()=>document.getElementById('loader').classList.add('gone'),2200);
+});
+
+// ════════════════════════════════════════
+// NAVBAR
+// ════════════════════════════════════════
+function buildNav(){
+  const ui=DATA[S.lang].ui;
+  const tb=document.getElementById('tbtn');
+  tb.innerHTML=`${S.theme==='dark'?IC.sun:IC.moon} ${S.theme==='dark'?ui.light:ui.dark}`;
+}
+
+function toggleTheme(){
+  S.theme=S.theme==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',S.theme);
+  buildNav();
+}
+
+function toggleLang(){
+  S.lang=S.lang==='en'?'bm':'en';
+  document.getElementById('lbtn').textContent=S.lang==='en'?'BM':'EN';
+  buildNav();
+  buildHero();
+  buildCards();
+  if(S.inCards){
+    document.getElementById('hero').style.display='none';
+    document.getElementById('cards').classList.add('on');
+    document.getElementById('prog').classList.add('show');
+  }
+}
+
+// ════════════════════════════════════════
+// HERO
+// ════════════════════════════════════════
+function buildHero(){
+  const ui=DATA[S.lang].ui;
+  document.getElementById('hc').innerHTML=`
+    <div class="h-badge"><span class="h-dot"></span>Interactive Learning Experience</div>
+    <h1 class="h-title">${ui.title}<em>${ui.sub}</em></h1>
+    <p class="h-sub"></p>
+    <p class="h-desc">${ui.desc}</p>
+    <button class="cta" onclick="startCards()">${IC.rt}${ui.start}</button>
+    <div class="h-stats">
+      <div><div class="h-stat-n">12</div><div class="h-stat-l">Topics</div></div>
+      <div><div class="h-stat-n">5</div><div class="h-stat-l">Minutes</div></div>
+      <div><div class="h-stat-n">3</div><div class="h-stat-l">Quiz</div></div>
+    </div>
+    <div class="h-flag"><div class="h-flag-inner">${flagSVG(54,35)}</div></div>`;
+}
+
+// ════════════════════════════════════════
+// START
+// ════════════════════════════════════════
+function startCards(){
+  const hero=document.getElementById('hero');
+  hero.classList.add('bye');
+  setTimeout(()=>{
+    hero.style.display='none';
+    document.getElementById('cards').classList.add('on');
+    document.getElementById('prog').classList.add('show');
+    document.getElementById('nav').classList.add('blur');
+    S.inCards=true;
+    document.getElementById('cw').scrollTop=0;
+  },600);
+}
+
+// ════════════════════════════════════════
+// BUILD CARDS
+// ════════════════════════════════════════
+function buildCards(){
+  const cw=document.getElementById('cw');
+  const ui=DATA[S.lang].ui;
+  const cards=DATA[S.lang].cards;
+  S.quizA=new Array(3).fill(null);
+  S.qScore=0; S.qCur=0;
+  cw.innerHTML='';
+
+  // Learning cards
+  cards.forEach((c,i)=>{
+    const isLast=i===cards.length-1;
+    const bg=i%2===0?'slide-bg-a':'slide-bg-b';
+    const div=document.createElement('div');
+    div.className=`slide ${bg}`;
+    div.setAttribute('data-i',i);
+    div.innerHTML=`
+      <div class="deco deco1"></div>
+      <div class="deco deco2"></div>
+      <div class="flag-watermark">${flagSVG(180,117)}</div>
+      <div class="card-in">
+        <div class="c-num">${String(i+1).padStart(2,'0')} ${ui.of} ${String(cards.length).padStart(2,'0')}</div>
+        <div class="c-icon">${IC[c.icon]||IC.map}</div>
+        <div>
+          <div class="c-tag">${c.tag}</div>
+          <h2 class="c-title">${c.title}</h2>
+        </div>
+        <p class="c-body">${c.body}</p>
+        <div class="c-fact">
+          <div class="c-fact-lbl">${IC.bulb}${ui.dyk}</div>
+          <div class="c-fact-txt">${c.fact}</div>
+        </div>
+      </div>
+      ${!isLast?`<div class="hint">${IC.dn}<span class="hint-t">${ui.swipe}</span></div>`:''}`;
+    cw.appendChild(div);
+  });
+
+  // Quiz
+  const qz=document.createElement('div');
+  qz.className='quiz-slide';
+  const qdata=DATA[S.lang].quiz;
+  qz.innerHTML=`
+    <div class="deco deco1"></div>
+    <div class="deco deco2"></div>
+    <div class="quiz-in">
+      <div class="qz-lbl">${ui.quiz}</div>
+      <h2 class="qz-h">${ui.quiz}</h2>
+      <p class="qz-sub">${ui.qsub}</p>
+      <div class="qz-pbar"><div class="qz-pfill" id="qpf" style="width:33%"></div></div>
+      ${qdata.map((q,qi)=>`
+        <div class="qblock ${qi===0?'on':''}" id="qb${qi}">
+          <div class="q-txt">${qi+1}. ${q.q}</div>
+          <div class="opts">
+            ${q.opts.map((o,oi)=>`
+              <button class="opt" data-q="${qi}" data-a="${oi}" onclick="answerQ(${qi},${oi})">
+                <span class="opt-lt">${'ABCD'[oi]}</span>${o}
+              </button>`).join('')}
+          </div>
+          <div class="q-fb" id="fb${qi}">${q.exp}</div>
+          <button class="qnext" id="qn${qi}" onclick="nextQ(${qi})">
+            ${qi<qdata.length-1?`${ui.next}${IC.rt}`:`${ui.result}${IC.rt}`}
+          </button>
+        </div>`).join('')}
+    </div>`;
+  cw.appendChild(qz);
+
+  // Completion
+  const dn=document.createElement('div');
+  dn.className='done-slide';
+  dn.innerHTML=`
+    <div class="deco deco1"></div>
+    <div class="deco deco2"></div>
+    <div class="done-in">
+      <div class="trophy">${IC.trophy}</div>
+      <h2 class="done-t">${ui.done}</h2>
+      <p class="done-s">${ui.donesub}</p>
+      <div class="score-box">
+        <div class="sc-lbl">${ui.score}</div>
+        <div><span class="sc-num" id="sc">0</span><span class="sc-tot"> / 3</span></div>
+        <div class="sc-stars" id="scs">
+          ${[0,1,2].map(()=>`<div class="sc-star">${IC.star}</div>`).join('')}
+        </div>
+      </div>
+      <div class="done-acts">
+        <button class="abtn abtn-p" onclick="restart()">${IC.ref}${ui.restart}</button>
+        <button class="abtn abtn-s" onclick="shareIt()">${IC.shr}${ui.share}</button>
+      </div>
+    </div>`;
+  cw.appendChild(dn);
+
+  buildDots();
+  setupScroll();
+}
+
+// ════════════════════════════════════════
+// PROGRESS DOTS
+// ════════════════════════════════════════
+function buildDots(){
+  const prog=document.getElementById('prog');
+  const total=DATA[S.lang].cards.length+2;
+  prog.innerHTML='';
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div');
+    d.className=`pd ${i===0?'on':''}`;
+    d.onclick=()=>goTo(i);
+    prog.appendChild(d);
+  }
+}
+
+function goTo(i){
+  const cw=document.getElementById('cw');
+  const ch=Array.from(cw.children);
+  if(ch[i]) ch[i].scrollIntoView({behavior:'smooth'});
+}
+
+function setupScroll(){
+  const cw=document.getElementById('cw');
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const idx=Array.from(cw.children).indexOf(e.target);
+        document.querySelectorAll('.pd').forEach((d,i)=>d.classList.toggle('on',i===idx));
+        // Completion trigger
+        const total=DATA[S.lang].cards.length;
+        if(idx===total+1) showCompletion();
+      }
+    });
+  },{threshold:0.55});
+  Array.from(cw.children).forEach(c=>obs.observe(c));
+
+  cw.addEventListener('scroll',()=>{
+    document.getElementById('nav').classList.toggle('blur',cw.scrollTop>10);
+  });
+}
+
+// ════════════════════════════════════════
+// QUIZ LOGIC
+// ════════════════════════════════════════
+function answerQ(qi,ai){
+  if(S.quizA[qi]!==null) return;
+  S.quizA[qi]=ai;
+  const correct=DATA[S.lang].quiz[qi].ans;
+  if(ai===correct) S.qScore++;
+  document.querySelectorAll(`[data-q="${qi}"]`).forEach((b,i)=>{
+    b.disabled=true;
+    if(i===correct) b.classList.add('ok');
+    else if(i===ai&&i!==correct) b.classList.add('ng');
+  });
+  document.getElementById(`fb${qi}`).classList.add('show');
+  document.getElementById(`qn${qi}`).classList.add('show');
+}
+
+function nextQ(cur){
+  const total=DATA[S.lang].quiz.length;
+  if(cur<total-1){
+    document.getElementById(`qb${cur}`).classList.remove('on');
+    document.getElementById(`qb${cur+1}`).classList.add('on');
+    document.getElementById('qpf').style.width=`${((cur+2)/total)*100}%`;
+  } else {
+    goTo(DATA[S.lang].cards.length+1);
+  }
+}
+
+// ════════════════════════════════════════
+// COMPLETION
+// ════════════════════════════════════════
+function showCompletion(){
+  document.getElementById('sc').textContent=S.qScore;
+  document.querySelectorAll('.sc-star').forEach((s,i)=>{
+    if(i<S.qScore) s.classList.add('lit');
+  });
+  launchConfetti();
+}
+
+function launchConfetti(){
+  const cls=['flag-red','flag-red','flag-blue','flag-yellow','flag-yellow','flag-white'];
+  const style=document.createElement('style');
+  style.textContent='.flag-red{background:#CC1722}.flag-blue{background:#010080}.flag-yellow{background:#FCCB00}.flag-white{background:#fff}';
+  document.head.appendChild(style);
+  for(let i=0;i<70;i++){
+    const p=document.createElement('div');
+    p.className=`cf ${cls[Math.floor(Math.random()*cls.length)]}`;
+    p.style.cssText=`--x:${Math.random()*100}vw;--dr:${(Math.random()-.5)*220}px;--d:${2+Math.random()*2.5}s;--dl:${Math.random()*.8}s`;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),6000);
+  }
+}
+
+// ════════════════════════════════════════
+// RESTART & SHARE
+// ════════════════════════════════════════
+function restart(){
+  S.qScore=0; S.quizA=[]; S.qCur=0; S.inCards=false;
+  const hero=document.getElementById('hero');
+  hero.style.display=''; hero.classList.remove('bye');
+  document.getElementById('cards').classList.remove('on');
+  document.getElementById('prog').classList.remove('show');
+  document.getElementById('nav').classList.remove('blur');
+  buildCards();
+  buildHero();
+}
+
+function shareIt(){
+  const msg=S.lang==='en'
+    ?`I just learned about Malaysia in 5 minutes! Scored ${S.qScore}/3 on the quiz.`
+    :`Saya baru belajar tentang Malaysia dalam 5 minit! Skor ${S.qScore}/3 dalam kuiz.`;
+  if(navigator.share) navigator.share({title:'Learn Malaysia in 5 Minutes',text:msg});
+  else if(navigator.clipboard) navigator.clipboard.writeText(msg).then(()=>alert('Copied!'));
+}
+</script>
 </body>
 </html>
